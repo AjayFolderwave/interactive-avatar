@@ -58,11 +58,17 @@ async def create_conversation():
                 "Content-Type": "application/json"
             }
             
-            # Build conversation payload
+            # Build conversation payload - optimized for speed
             payload = {
                 "replica_id": os.getenv("TAVUS_REPLICA_ID", "r18d46c93e"),
                 "conversation_name": f"Interactive Demo {asyncio.get_event_loop().time()}",
-                "conversational_context": "You are Ajay's AI assistant for product demos. Keep responses short (1-2 sentences). Be enthusiastic and helpful!"
+                "conversational_context": "You are a helpful AI assistant. CRITICAL: Keep ALL responses to ONE short sentence only (5-15 words max). Be concise and direct. Never explain or elaborate unless asked.",
+                "properties": {
+                    "max_call_duration": 600,
+                    "participant_left_timeout": 30,
+                    "enable_recording": False,
+                    "apply_greenscreen": False
+                }
             }
             
             # Add persona_id if configured
