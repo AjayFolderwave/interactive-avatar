@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Avatar Assistant</title>
+    <title>Interactive Avatar</title>
     <style>
         * {
             margin: 0;
@@ -11,104 +11,66 @@
             box-sizing: border-box;
         }
         
+        :root {
+            --primary: #007AFF;
+            --secondary: #5856D6;
+            --success: #34C759;
+            --warning: #FF9500;
+            --background: #000000;
+            --surface: rgba(255, 255, 255, 0.1);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --blur: blur(40px);
+        }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 122, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(88, 86, 214, 0.15) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(5deg); }
+            66% { transform: translate(-20px, 20px) rotate(-5deg); }
         }
         
         .container {
-            max-width: 900px;
+            max-width: 1400px;
             width: 100%;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            opacity: 0.9;
-            font-size: 14px;
-        }
-        
-        .main-content {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-        }
-        
-        .video-section {
-            flex: 1;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
             position: relative;
-            min-height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            z-index: 1;
         }
         
-        .video-section video {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        .video-placeholder {
-            color: white;
+        .hero-section {
             text-align: center;
-            padding: 40px;
+            margin-bottom: 60px;
+            animation: fadeInUp 1s ease-out;
         }
         
-        .video-placeholder .avatar-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-        
-        .chat-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .chat-container {
-            height: 350px;
-            overflow-y: auto;
-            padding: 15px;
-            background: white;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-        
-        .message {
-            margin-bottom: 15px;
-            display: flex;
-            gap: 10px;
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
@@ -116,360 +78,423 @@
             }
         }
         
-        .message.user {
-            flex-direction: row-reverse;
+        .hero-section h1 {
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFFFFF 0%, rgba(255, 255, 255, 0.6) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
         }
         
-        .message-avatar {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
+        .hero-section .tagline {
+            font-size: clamp(18px, 3vw, 28px);
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-bottom: 15px;
+            letter-spacing: -0.01em;
+        }
+        
+        .badge {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-        
-        .message.user .message-avatar {
-            background: #667eea;
-        }
-        
-        .message.assistant .message-avatar {
-            background: #764ba2;
-        }
-        
-        .message-content {
-            max-width: 85%;
-            padding: 10px 14px;
-            border-radius: 14px;
-            line-height: 1.4;
+            gap: 8px;
+            padding: 10px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 100px;
             font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-top: 10px;
         }
         
-        .message.user .message-content {
-            background: #667eea;
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-        
-        .message.assistant .message-content {
-            background: #e5e7eb;
-            color: #333;
-            border-bottom-left-radius: 4px;
-        }
-        
-        .controls {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .mic-button {
-            width: 70px;
-            height: 70px;
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
             border-radius: 50%;
-            border: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .mic-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-        
-        .mic-button:active {
-            transform: scale(0.95);
-        }
-        
-        .mic-button.recording {
-            background: #ef4444;
-            animation: pulse 1.5s infinite;
+            animation: pulse 2s ease-in-out infinite;
         }
         
         @keyframes pulse {
-            0%, 100% {
-                box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-            }
-            50% {
-                box-shadow: 0 4px 25px rgba(239, 68, 68, 0.8);
-            }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
         }
         
-        .status {
-            padding: 8px 16px;
-            border-radius: 16px;
-            font-size: 13px;
-            font-weight: 500;
+        .main-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: fadeInUp 1s ease-out 0.2s both;
         }
         
-        .status.connected {
-            background: #d1fae5;
-            color: #065f46;
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 700px;
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
         
-        .status.disconnected {
-            background: #fee2e2;
-            color: #991b1b;
+        .video-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 122, 255, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            animation: pulse-glow 3s ease-in-out infinite;
         }
         
-        .status.processing {
-            background: #fef3c7;
-            color: #92400e;
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
         }
         
-        .status.generating {
-            background: #ddd6fe;
-            color: #5b21b6;
+        #tavus-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
         
         .loading {
             text-align: center;
-            padding: 20px;
-            color: #666;
+            color: var(--text-primary);
+        }
+        
+        .loading-icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+            animation: float-icon 3s ease-in-out infinite;
+        }
+        
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
         }
         
         .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+            margin: 0 auto 30px;
         }
         
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .controls {
+            padding: 50px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 28px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 100px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .status-indicator.ready {
+            color: var(--success);
+            border-color: rgba(52, 199, 89, 0.3);
+            background: rgba(52, 199, 89, 0.1);
+        }
+        
+        .status-indicator.connecting {
+            color: var(--warning);
+            border-color: rgba(255, 149, 0, 0.3);
+            background: rgba(255, 149, 0, 0.1);
+        }
+        
+        .status-indicator.live {
+            color: var(--success);
+            border-color: rgba(52, 199, 89, 0.3);
+            background: rgba(52, 199, 89, 0.15);
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        .start-button {
+            position: relative;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: 20px;
+            font-weight: 600;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 10px 40px rgba(0, 122, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .start-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .start-button:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 
+                0 20px 60px rgba(0, 122, 255, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        .start-button:hover::before {
+            opacity: 1;
+        }
+        
+        .start-button:active {
+            transform: translateY(-2px) scale(1);
+        }
+        
+        .start-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .info {
+            margin-top: 30px;
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .info strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 60px;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        
+        .feature-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                margin-bottom: 40px;
+            }
+            
+            .video-container {
+                height: 500px;
+            }
+            
+            .controls {
+                padding: 30px 20px;
+            }
+            
+            .features {
+                margin-top: 40px;
+                gap: 15px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🎭 Interactive Avatar Assistant</h1>
-            <p>Powered by Claude + Cartesia + Whisper + HeyGen</p>
+        <div class="hero-section">
+            <h1>Interactive Avatar</h1>
+            <p class="tagline">The future of AI conversation is here</p>
+            <div class="badge">
+                <span class="badge-dot"></span>
+                Powered by Tavus CVI
+            </div>
         </div>
         
-        <div class="main-content">
-            <!-- Avatar Video Section -->
-            <div class="video-section" id="videoSection">
-                <div class="video-placeholder">
-                    <div class="avatar-icon">🎭</div>
-                    <p>Avatar will appear here</p>
+        <div class="main-card">
+            <div class="video-container" id="videoContainer">
+                <div class="loading">
+                    <div class="loading-icon">✨</div>
+                    <div class="spinner"></div>
+                    <p>Ready to start your conversation</p>
                 </div>
             </div>
             
-            <!-- Chat Transcript Section -->
-            <div class="chat-section">
-                <div class="chat-container" id="chat">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <p>Connecting to AI...</p>
-                    </div>
+            <div class="controls">
+                <div class="status-indicator ready" id="status">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Ready</span>
+                </div>
+                <br>
+                <button class="start-button" id="startButton">
+                    Start Conversation
+                </button>
+                <div class="info">
+                    Experience real-time AI conversations with instant responses<br>
+                    <strong>Sub-second response time • Natural interactions • Your voice, perfectly synced</strong>
                 </div>
             </div>
         </div>
         
-        <div class="controls">
-            <div class="status disconnected" id="status">Disconnected</div>
-            <button class="mic-button" id="micButton" disabled>
-                🎤
-            </button>
-            <div style="font-size: 12px; color: #666;" id="helpText">
-                Click to start
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Lightning Fast</div>
+                <div class="feature-desc">Sub-1 second response time for natural conversation flow</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎭</div>
+                <div class="feature-title">Perfect Lip-Sync</div>
+                <div class="feature-desc">Your digital twin with flawless facial animations</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <div class="feature-title">AI-Powered</div>
+                <div class="feature-desc">Claude AI brain for intelligent, contextual responses</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <div class="feature-title">Scalable</div>
+                <div class="feature-desc">Handle unlimited conversations simultaneously</div>
             </div>
         </div>
     </div>
 
     <script>
-        let ws = null;
-        let mediaRecorder = null;
-        let audioChunks = [];
-        let isRecording = false;
-        let stream = null;
-        let continuousMode = false;
-        let recordingStartTime = 0;
+        const startButton = document.getElementById('startButton');
+        const videoContainer = document.getElementById('videoContainer');
+        const statusIndicator = document.getElementById('status');
+        const statusText = document.getElementById('statusText');
         
-        const chatContainer = document.getElementById('chat');
-        const videoSection = document.getElementById('videoSection');
-        const micButton = document.getElementById('micButton');
-        const statusDiv = document.getElementById('status');
-        const helpText = document.getElementById('helpText');
-        
-        function connect() {
-            ws = new WebSocket(`ws://${window.location.host}/ws`);
-            
-            ws.onopen = () => {
-                console.log('Connected');
-                statusDiv.textContent = 'Connected';
-                statusDiv.className = 'status connected';
-                micButton.disabled = false;
-                chatContainer.innerHTML = '';
-            };
-            
-            ws.onmessage = async (event) => {
-                const data = JSON.parse(event.data);
-                
-                if (data.type === 'message') {
-                    addMessage(data.role, data.content);
-                } else if (data.type === 'video') {
-                    // Show avatar video
-                    showVideo(data.url);
-                    statusDiv.textContent = 'Connected';
-                    statusDiv.className = 'status connected';
-                }
-            };
-            
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
-                statusDiv.textContent = 'Error';
-                statusDiv.className = 'status disconnected';
-            };
-            
-            ws.onclose = () => {
-                statusDiv.textContent = 'Disconnected';
-                statusDiv.className = 'status disconnected';
-                micButton.disabled = true;
-            };
-        }
-        
-        function addMessage(role, content) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
-            
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-            avatar.textContent = role === 'user' ? '👤' : '🤖';
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.textContent = content;
-            
-            messageDiv.appendChild(avatar);
-            messageDiv.appendChild(contentDiv);
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-        
-        function showVideo(url) {
-            videoSection.innerHTML = `
-                <video autoplay controls onended="onVideoEnded()">
-                    <source src="${url}" type="video/mp4">
-                </video>
-            `;
-        }
-        
-        window.onVideoEnded = function() {
-            // Auto-record when video finishes
-            if (continuousMode) {
-                setTimeout(() => {
-                    startRecording();
-                }, 500);
-            }
-        };
-        
-        async function startRecording() {
-            if (isRecording) return;
+        startButton.addEventListener('click', async () => {
+            startButton.disabled = true;
+            startButton.textContent = 'Connecting...';
+            statusText.textContent = 'Connecting';
+            statusIndicator.className = 'status-indicator connecting';
             
             try {
-                if (!stream) {
-                    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const response = await fetch('/create-conversation');
+                const data = await response.json();
+                
+                if (data.success && data.conversation_url) {
+                    // Redirect directly to Tavus conversation instead of iframe
+                    statusText.textContent = 'Redirecting...';
+                    statusIndicator.className = 'status-indicator connecting';
+                    
+                    setTimeout(() => {
+                        window.open(data.conversation_url, '_blank');
+                        statusText.textContent = 'Opened in new tab';
+                        statusIndicator.className = 'status-indicator live';
+                        startButton.textContent = 'Open Another Conversation';
+                        startButton.disabled = false;
+                    }, 1000);
+                    
+                } else {
+                    const errorMsg = data.error || 'Unknown error';
+                    let userMessage = errorMsg;
+                    
+                    if (errorMsg.includes('maximum concurrent conversations')) {
+                        userMessage = 'You have too many active conversations. Please wait 5-10 minutes or check your Tavus dashboard to close existing sessions.';
+                    }
+                    
+                    alert('Failed to start conversation: ' + userMessage);
+                    startButton.disabled = false;
+                    startButton.textContent = 'Start Conversation';
+                    statusText.textContent = 'Ready';
+                    statusIndicator.className = 'status-indicator ready';
                 }
-                
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-                recordingStartTime = Date.now();
-                
-                mediaRecorder.ondataavailable = (event) => {
-                    audioChunks.push(event.data);
-                };
-                
-                mediaRecorder.onstop = async () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const reader = new FileReader();
-                    
-                    reader.onloadend = () => {
-                        const base64Audio = reader.result.split(',')[1];
-                        
-                        ws.send(JSON.stringify({
-                            type: 'audio',
-                            data: base64Audio
-                        }));
-                        
-                        statusDiv.textContent = 'Generating avatar...';
-                        statusDiv.className = 'status generating';
-                    };
-                    
-                    reader.readAsDataURL(audioBlob);
-                };
-                
-                mediaRecorder.start();
-                isRecording = true;
-                micButton.classList.add('recording');
-                micButton.textContent = '🔴';
-                statusDiv.textContent = 'Recording...';
-                statusDiv.className = 'status processing';
-                helpText.textContent = 'Click to stop (max 8 sec)';
                 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Could not access microphone.');
-            }
-        }
-        
-        function stopRecording() {
-            if (!isRecording) return;
-            
-            mediaRecorder.stop();
-            isRecording = false;
-            micButton.classList.remove('recording');
-            micButton.textContent = '🎤';
-            helpText.textContent = 'Waiting for response...';
-        }
-        
-        // Auto-stop after 8 seconds
-        setInterval(() => {
-            if (isRecording && continuousMode) {
-                const elapsed = Date.now() - recordingStartTime;
-                if (elapsed > 8000) {
-                    stopRecording();
-                }
-            }
-        }, 100);
-        
-        micButton.addEventListener('click', async () => {
-            if (!continuousMode) {
-                continuousMode = true;
-                micButton.style.border = '3px solid #10b981';
-                helpText.textContent = 'Continuous mode ON';
-                await startRecording();
-            } else if (isRecording) {
-                stopRecording();
-            } else {
-                await startRecording();
+                alert('Failed to connect: ' + error.message);
+                startButton.disabled = false;
+                startButton.textContent = 'Start Conversation';
+                statusText.textContent = 'Ready';
+                statusIndicator.className = 'status-indicator ready';
             }
         });
-        
-        micButton.addEventListener('dblclick', () => {
-            continuousMode = false;
-            stopRecording();
-            micButton.style.border = 'none';
-            helpText.textContent = 'Click to start';
-            statusDiv.textContent = 'Paused';
-        });
-        
-        connect();
     </script>
 </body>
 </html>
